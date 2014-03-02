@@ -25,6 +25,15 @@
 
             <requestFocus />
         </EditText>
+        <Button
+            android:id="@+id/btnFbSignIn"
+            android:text="Sign In With Facebook"
+            android:layout_width="300dp"
+            android:layout_height="60dp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/etEmail"
+            android:onClick="signInFb"
+            />
     </RelativeLayout>
 
 </ScrollView>
