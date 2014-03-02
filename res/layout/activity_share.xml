@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:background="#F2F2F2"
+    android:orientation="vertical" >
+
+    <ImageView
+        android:id="@+id/bar"
+        android:layout_width="fill_parent"
+        android:layout_height="49dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/navigationbar" />
+
+    <ImageView
+        android:id="@+id/ivStore"
+        android:layout_width="160dp"
+        android:layout_height="53dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:scaleType="fitXY"
+        android:src="@drawable/logo" />
+
+    <ImageView
+        android:id="@+id/ivPhoto"
+        android:layout_width="match_parent"
+        android:layout_height="170dp"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/bar"
+        android:scaleType="fitXY"
+        android:src="@drawable/couponsushiworld" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/ivPhoto"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:id="@+id/ivRedeemButton"
+            android:layout_width="330dp"
+            android:layout_height="45dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="8dp"
+            android:onClick="redeemOffer"
+            android:scaleType="fitXY"
+            android:src="@drawable/redeembutton" />
+
+        <CheckBox
+            android:id="@+id/cbTwitter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/ivRedeemButton"
+            android:layout_alignTop="@+id/cbFacebook"
+            android:layout_marginRight="@dimen/fbtwitter_horizontal_margin"
+            android:button="@drawable/twitterbutton"
+            android:onClick="shareOnTwitter" />
+
+        <CheckBox
+            android:id="@+id/cbFacebook"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/ivRedeemButton"
+            android:layout_alignLeft="@+id/ivRedeemButton"
+            android:layout_marginBottom="@dimen/fbtwitter_vertical_margin"
+            android:layout_marginLeft="@dimen/fbtwitter_horizontal_margin"
+            android:button="@drawable/facebookbutton"
+            android:onClick="shareOnFacebook" />
+
+        <TextView
+            android:id="@+id/tvRedeem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/ivRedeemButton"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="10dp"
+            android:text=""
+            android:textColor="#F2F2F2"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tvUnderCamera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/ivRedeemButton"
+            android:layout_alignParentTop="true"
+            android:layout_alignRight="@+id/ivRedeemButton"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            android:layout_marginTop="10dp"
+            android:text="Bahahahahahaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabababa"
+            android:textColor="#000000" />
+
+        <EditText
+            android:id="@+id/etMessageBox"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_below="@+id/tvUnderCamera"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="@dimen/messagebox_horizontal_margin"
+            android:layout_marginRight="@dimen/messagebox_horizontal_margin"
+            android:layout_marginTop="@dimen/messagebox_vertical_margin"
+            android:background="#FFCECECE"
+            android:gravity="top"
+            android:inputType="textShortMessage" />
+        <!-- android:src="@drawable/messageboxgray" /> -->
+
+        <TextView
+            android:id="@+id/tvUnderMessageBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/etMessageBox"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:text="bahahahahaahaaaaaaaaaaaaaaaaaaaaaaaaah"
+            android:textColor="#000000" />
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/ivTakePhoto"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignBottom="@+id/ivPhoto"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="38dp"
+        android:onClick="takePhoto"
+        android:scaleType="fitXY"
+        android:src="@drawable/takephotobutton" />
+
+    <ImageButton
+        android:id="@+id/bBack"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/bar"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/back"
+        android:onClick="back" />
+
+</RelativeLayout>

@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="20dp"
+    android:gravity="top"
+    android:orientation="vertical" >
+
+    <ImageView
+        android:id="@+id/bar"
+        android:layout_width="fill_parent"
+        android:layout_height="49dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/navigationbar" />
+
+    <ImageView
+        android:id="@+id/ivStore"
+        android:layout_width="160dp"
+        android:layout_height="53dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:scaleType="fitXY"
+        android:src="@drawable/logo" />
+
+    <ImageButton
+        android:id="@+id/bBack"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/bar"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/back"
+        android:onClick="back" />
+
+    <ImageView
+        android:id="@+id/ivc"
+        android:layout_width="match_parent"
+        android:layout_height="170dp"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/bar"
+        android:paddingLeft="@dimen/coupon_horizontal_margin"
+        android:paddingRight="@dimen/coupon_horizontal_margin"
+        android:paddingTop="@dimen/coupon_vertical_margin"
+        android:scaleType="fitXY"
+        android:src="@drawable/couponsushiworld"
+        android:visibility="invisible" />
+
+    <RelativeLayout
+        android:id="@+id/TextLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="140dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/ivc"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/tvMainDis"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="10dp"
+            android:text="MainDiscount"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="#04B404"
+            android:textSize="25sp" />
+
+        <TextView
+            android:id="@+id/tvDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@+id/tvMainDis"
+            android:layout_centerHorizontal="true"
+            android:paddingLeft="@dimen/Detail_horizontal_margin"
+            android:paddingRight="@dimen/Detail_horizontal_margin"
+            android:paddingTop="@dimen/Detail_vertical_margin"
+            android:text="@string/Details"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#585858" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:paddingBottom="15dp" >
+
+        <RelativeLayout
+            android:id="@+id/redeemLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="11dp" >
+
+            <ImageView
+                android:id="@+id/ivRedeem"
+                android:layout_width="fill_parent"
+                android:layout_height="49dp"
+                android:onClick="sharePhoto"
+                android:scaleType="fitXY"
+                android:src="@drawable/redeemgreenicon" />
+
+            <TextView
+                android:id="@+id/tvShare"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/ivRedeem"
+                android:layout_alignParentLeft="true"
+                android:layout_alignRight="@+id/ivRedeem"
+                android:gravity="center_horizontal"
+                android:paddingBottom="@dimen/redeem_text_vertical_margin"
+                android:text="Tweet a photo!"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/detailFavorLayout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/redeemLayout"
+            android:layout_marginBottom="@dimen/favor_vertical_margin"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="@dimen/favor_vertical_margin"
+            android:baselineAligned="false"
+            android:orientation="horizontal" >
+
+            <RelativeLayout
+                android:id="@+id/detailLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1" >
+
+                <ImageView
+                    android:id="@+id/ivDetail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="49dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/detailsbutton" />
+
+                <TextView
+                    android:id="@+id/tvStore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/ivDetail"
+                    android:layout_alignLeft="@+id/ivDetail"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginLeft="20dp"
+                    android:gravity="center_horizontal"
+                    android:paddingBottom="@dimen/redeem_text_vertical_margin"
+                    android:text="Store Details"
+                    android:textColor="#FFFFFF"
+                    android:textSize="15sp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/favorLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1" >
+
+                <ImageView
+                    android:id="@+id/ivFavor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="49dp"
+                    android:layout_alignParentRight="true"
+                    android:onClick="favoriteIt"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/favouritebutton" />
+
+                <TextView
+                    android:id="@+id/tvFavor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/ivFavor"
+                    android:layout_alignLeft="@+id/ivFavor"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginLeft="20dp"
+                    android:gravity="center_horizontal"
+                    android:paddingBottom="@dimen/redeem_text_vertical_margin"
+                    android:text="Favorite it!"
+                    android:textColor="#FFFFFF"
+                    android:textSize="15sp" />
+            </RelativeLayout>
+        </LinearLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

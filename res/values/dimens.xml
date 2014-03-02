@@ -1,0 +1,18 @@
+<resources>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="tiles_horizontal_margin">8dp</dimen>
+    <dimen name="tiles_vertical_margin">8dp</dimen>
+    <dimen name="coupon_horizontal_margin">11dp</dimen>
+    <dimen name="coupon_vertical_margin">11dp</dimen>
+    <dimen name="Detail_horizontal_margin">20dp</dimen>
+    <dimen name="Detail_vertical_margin">5dp</dimen>
+    <dimen name="redeem_vertical_margin">8dp</dimen>
+    <dimen name="favor_vertical_margin">10dp</dimen>
+    <dimen name="redeem_text_vertical_margin">15dp</dimen>
+    <dimen name="fbtwitter_horizontal_margin">65dp</dimen>
+    <dimen name="fbtwitter_vertical_margin">5dp</dimen>
+    <dimen name="messagebox_horizontal_margin">7dp</dimen>
+    <dimen name="messagebox_vertical_margin">8dp</dimen>
+
+</resources>

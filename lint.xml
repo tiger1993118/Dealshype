@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <issue id="ContentDescription">
+        <ignore path="res/layout/activity_browser.xml" />
+        <ignore path="res/layout/activity_coupon.xml" />
+        <ignore path="res/layout/activity_search_favor.xml" />
+        <ignore path="res/layout/activity_share.xml" />
+        <ignore path="res/layout/activity_tiles.xml" />
+    </issue>
+    <issue id="DefaultLocale">
+        <ignore path="src/com/example/deals/Search.java" />
+    </issue>
+    <issue id="DisableBaselineAlignment">
+        <ignore path="res/layout/activity_search_favor.xml" />
+    </issue>
+    <issue id="HardcodedText">
+        <ignore path="res/layout/activity_coupon.xml" />
+        <ignore path="res/layout/activity_login.xml" />
+        <ignore path="res/layout/activity_share.xml" />
+    </issue>
+    <issue id="TextFields">
+        <ignore path="res/layout/activity_search_favor.xml" />
+        <ignore path="res/layout/activity_tiles.xml" />
+    </issue>
+</lint>
