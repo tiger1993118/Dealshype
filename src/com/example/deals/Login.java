@@ -42,6 +42,7 @@ public class Login extends Activity implements OnEditorActionListener {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		fbShare.setActivity(this);
 		if(fbShare.isLoggedOn()){
 			Intent iTiles = new Intent("com.example.deals.Tiles");
 			startActivity(iTiles);

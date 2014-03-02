@@ -58,6 +58,10 @@ public class Tiles extends Activity implements OnClickListener,
 		MyTimerTask myTask = new MyTimerTask();
 		Timer myTimer = new Timer();
 		myTimer.schedule(myTask, 0, 300000);
+		setUpVariables();
+	}
+
+	private void setUpVariables() {
 		bFavor = (ImageButton) findViewById(R.id.bFavor);
 		bSearch = (ImageButton) findViewById(R.id.bSearch);
 		ivStore = (ImageView) findViewById(R.id.ivStore);
@@ -65,6 +69,7 @@ public class Tiles extends Activity implements OnClickListener,
 		bFavor.setOnClickListener(this);
 		bSearch.setOnClickListener(this);
 		etSearch.setOnEditorActionListener(this);
+
 	}
 
 	private void setup() {
@@ -99,6 +104,7 @@ public class Tiles extends Activity implements OnClickListener,
 				String sCurrVersion = null, line;
 				while ((line = rd.readLine()) != null) {
 					sCurrVersion = line;
+					// imporve
 				}
 				return sCurrVersion;
 			} catch (MalformedURLException e2) {

@@ -97,26 +97,16 @@
             android:layout_marginRight="10dp"
             android:layout_marginTop="11dp" >
 
-            <ImageView
-                android:id="@+id/ivRedeem"
+            <Button
+                android:id="@+id/bRedeem"
                 android:layout_width="fill_parent"
                 android:layout_height="49dp"
+                android:background="@drawable/redeemgreenicon"
                 android:onClick="sharePhoto"
                 android:scaleType="fitXY"
-                android:src="@drawable/redeemgreenicon" />
-
-            <TextView
-                android:id="@+id/tvShare"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/ivRedeem"
-                android:layout_alignParentLeft="true"
-                android:layout_alignRight="@+id/ivRedeem"
-                android:gravity="center_horizontal"
-                android:paddingBottom="@dimen/redeem_text_vertical_margin"
                 android:text="Tweet a photo!"
                 android:textColor="#FFFFFF"
-                android:textSize="15sp" />
+                android:textSize="20sp" />
         </RelativeLayout>
 
         <LinearLayout
@@ -138,25 +128,14 @@
                 android:layout_marginRight="5dp"
                 android:layout_weight="1" >
 
-                <ImageView
-                    android:id="@+id/ivDetail"
+                <Button
+                    android:id="@+id/bDetail"
                     android:layout_width="wrap_content"
                     android:layout_height="49dp"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
+                    android:background="@drawable/detailsbutton"
                     android:scaleType="fitXY"
-                    android:src="@drawable/detailsbutton" />
-
-                <TextView
-                    android:id="@+id/tvStore"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/ivDetail"
-                    android:layout_alignLeft="@+id/ivDetail"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginLeft="20dp"
-                    android:gravity="center_horizontal"
-                    android:paddingBottom="@dimen/redeem_text_vertical_margin"
                     android:text="Store Details"
                     android:textColor="#FFFFFF"
                     android:textSize="15sp" />
@@ -169,25 +148,14 @@
                 android:layout_marginLeft="5dp"
                 android:layout_weight="1" >
 
-                <ImageView
-                    android:id="@+id/ivFavor"
+                <Button
+                    android:id="@+id/bFavor"
                     android:layout_width="wrap_content"
                     android:layout_height="49dp"
                     android:layout_alignParentRight="true"
+                    android:background="@drawable/favouritebutton"
                     android:onClick="favoriteIt"
                     android:scaleType="fitXY"
-                    android:src="@drawable/favouritebutton" />
-
-                <TextView
-                    android:id="@+id/tvFavor"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/ivFavor"
-                    android:layout_alignLeft="@+id/ivFavor"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginLeft="20dp"
-                    android:gravity="center_horizontal"
-                    android:paddingBottom="@dimen/redeem_text_vertical_margin"
                     android:text="Favorite it!"
                     android:textColor="#FFFFFF"
                     android:textSize="15sp" />

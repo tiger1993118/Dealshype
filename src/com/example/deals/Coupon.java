@@ -16,25 +16,27 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Bitmap.CompressFormat;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class Coupon extends Activity {
-	ImageView iv, ivFavoriteIt, ivCoupon;
+	ImageView iv, ivCoupon;
 	String index;
 	int image;
 	JSONObject currentCoupon, currentTileObject;
 	public static JSONArray FavoriteJsonArray, tilesjsonArray;
-	TextView tvMain, tvDetail, tvText1, tvFavoriteIt;
+	TextView tvMain, tvDetail;
 	String sMain, sDetail, sText1;
+	Button bRedeem, bFavor;
 	int order;
 
 	@Override
@@ -57,14 +59,13 @@ public class Coupon extends Activity {
 
 	private void SetLayout(String index) {
 		ivCoupon = (ImageView) findViewById(R.id.ivc);
-		ivFavoriteIt = (ImageView) findViewById(R.id.ivFavor);
+		bFavor = (Button) findViewById(R.id.bFavor);
 		loadBitmap(ivCoupon, Coupon.this, "coupon" + order + ".png", order,
 				tilesjsonArray);
-		tvFavoriteIt = (TextView) findViewById(R.id.tvFavor);
 		FavoriteJsonArray = getFavoriteArray();
 		if (!notAlreadyFavorited(index, FavoriteJsonArray)) {
-			ivFavoriteIt.setImageResource(R.drawable.removefavbutton);
-			tvFavoriteIt.setText("Remove Favorite");
+			bFavor.setBackgroundResource(R.drawable.removefavbutton);
+			bFavor.setText("Remove Favorite");
 		}
 		String sMain = null, sDetail = null, sText1 = null;
 		try {
@@ -76,10 +77,10 @@ public class Coupon extends Activity {
 		}
 		tvMain = (TextView) findViewById(R.id.tvMainDis);
 		tvDetail = (TextView) findViewById(R.id.tvDetail);
-		tvText1 = (TextView) findViewById(R.id.tvShare);
+		bRedeem = (Button) findViewById(R.id.bRedeem);
 		tvMain.setText(sMain);
 		tvDetail.setText(sDetail);
-		tvText1.setText(sText1);
+		bRedeem.setText(sText1);
 
 	}
 
@@ -206,13 +207,13 @@ public class Coupon extends Activity {
 		if (notAlreadyFavorited(index, FavoriteJsonArray)) {
 			FavoriteJsonArray = addFavorite(currentTileObject,
 					FavoriteJsonArray);
-			ivFavoriteIt.setImageResource(R.drawable.removefavbutton);
-			tvFavoriteIt.setText("Remove Favorite");
+			bFavor.setBackgroundResource(R.drawable.removefavbutton);
+			bFavor.setText("Remove Favorite");
 		} else {
 			FavoriteJsonArray = removeFavorite(currentTileObject,
 					FavoriteJsonArray);
-			ivFavoriteIt.setImageResource(R.drawable.favouritebutton);
-			tvFavoriteIt.setText("Add To Favorite!");
+			bFavor.setBackgroundResource(R.drawable.favouritebutton);
+			bFavor.setText("Add To Favorite!");
 		}
 		String sNewFavorite = FavoriteJsonArray.toString();
 		writeToFile(sNewFavorite);

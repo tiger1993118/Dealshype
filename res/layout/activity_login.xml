@@ -18,20 +18,24 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="430dp"
-            android:background="@drawable/textbox"
+            android:background="@drawable/box_signin_email"
             android:gravity="center"
-            android:hint="Email Address"
+            android:hint="Sign In with Email"
+            android:textColor="#FFFF"
             android:inputType="textEmailAddress" >
 
             <requestFocus />
         </EditText>
         <Button
             android:id="@+id/btnFbSignIn"
-            android:text="Sign In With Facebook"
+            android:text="Sign In with Facebook"
             android:layout_width="300dp"
             android:layout_height="60dp"
+            android:layout_marginTop="10dp"
             android:layout_centerHorizontal="true"
             android:layout_below="@+id/etEmail"
+            android:background="@drawable/btn_fb"
+            android:textColor="#FFFF"
             android:onClick="signInFb"
             />
     </RelativeLayout>
