@@ -42,7 +42,6 @@ public class FacebookShare implements ISnsShare{
 	
 	public void setActivity(Activity activity){
 		this.activity = activity;
-		uiHelper = new UiLifecycleHelper(activity, sessionCallback);
 	}
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent data){
@@ -50,6 +49,7 @@ public class FacebookShare implements ISnsShare{
 	}
 	
 	public void onCreate(Bundle savedInstanceState){
+		uiHelper = new UiLifecycleHelper(activity, sessionCallback);
 		uiHelper.onCreate(savedInstanceState);
 	}
 
