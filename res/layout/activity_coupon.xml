@@ -35,15 +35,14 @@
     <ImageView
         android:id="@+id/ivc"
         android:layout_width="match_parent"
-        android:layout_height="170dp"
+        android:layout_height="220dp"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/bar"
         android:paddingLeft="@dimen/coupon_horizontal_margin"
         android:paddingRight="@dimen/coupon_horizontal_margin"
         android:paddingTop="@dimen/coupon_vertical_margin"
         android:scaleType="fitXY"
-        android:src="@drawable/couponsushiworld"
-        android:visibility="invisible" />
+        android:src="#BDBDBD" />
 
     <RelativeLayout
         android:id="@+id/TextLayout"
@@ -82,11 +81,12 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/buttonLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:paddingBottom="15dp" >
+        android:paddingBottom="10dp" >
 
         <RelativeLayout
             android:id="@+id/redeemLayout"
@@ -106,7 +106,7 @@
                 android:scaleType="fitXY"
                 android:text="Tweet a photo!"
                 android:textColor="#FFFFFF"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
         </RelativeLayout>
 
         <LinearLayout
@@ -129,16 +129,16 @@
                 android:layout_weight="1" >
 
                 <Button
-                    android:id="@+id/bDetail"
+                    android:id="@+id/bStore"
                     android:layout_width="wrap_content"
                     android:layout_height="49dp"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
                     android:background="@drawable/detailsbutton"
                     android:scaleType="fitXY"
-                    android:text="Store Details"
+                    android:text="       Store Details"
                     android:textColor="#FFFFFF"
-                    android:textSize="15sp" />
+                    android:textSize="14sp" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -152,13 +152,14 @@
                     android:id="@+id/bFavor"
                     android:layout_width="wrap_content"
                     android:layout_height="49dp"
-                    android:layout_alignParentRight="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
                     android:background="@drawable/favouritebutton"
                     android:onClick="favoriteIt"
                     android:scaleType="fitXY"
-                    android:text="Favorite it!"
+                    android:text="    Add Favorite!"
                     android:textColor="#FFFFFF"
-                    android:textSize="15sp" />
+                    android:textSize="14sp" />
             </RelativeLayout>
         </LinearLayout>
     </RelativeLayout>
