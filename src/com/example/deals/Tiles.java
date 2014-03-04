@@ -10,9 +10,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Timer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TimerTask;
 
 import org.json.JSONArray;
@@ -20,6 +19,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -43,25 +43,24 @@ public class Tiles extends Activity implements OnClickListener,
 	ImageButton bFavor, bSearch;
 	ImageView ivStore;
 	EditText etSearch;
-	static int[] idA = { R.id.t1, R.id.t2, R.id.t3, R.id.t4, R.id.t5, R.id.t6,
+	int[] idA = { R.id.t1, R.id.t2, R.id.t3, R.id.t4, R.id.t5, R.id.t6,
 			R.id.t7, R.id.t8, R.id.t9, R.id.t10, R.id.t11, R.id.t12, R.id.t13,
 			R.id.t14, R.id.t15, R.id.t16, R.id.t17, R.id.t18 };
-	static JSONArray tilesjsonArray;
-	static Map<String, JSONObject> mapKeyToTileObject;
+	public static JSONArray tilesjsonArray, couponJsonArray;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_tiles);
-		setup();
-		MyTimerTask myTask = new MyTimerTask();
-		Timer myTimer = new Timer();
-		myTimer.schedule(myTask, 0, 300000);
+		new CheckVersion().execute();
+		// MyTimerTask myTask = new MyTimerTask();
+		// Timer myTimer = new Timer();
+		// myTimer.schedule(myTask, 0, 300000);
 		setUpVariables();
 	}
 
-	private void setUpVariables() {
+	protected void setUpVariables() {
 		bFavor = (ImageButton) findViewById(R.id.bFavor);
 		bSearch = (ImageButton) findViewById(R.id.bSearch);
 		ivStore = (ImageView) findViewById(R.id.ivStore);
@@ -72,141 +71,69 @@ public class Tiles extends Activity implements OnClickListener,
 
 	}
 
-	private void setup() {
-		try {
-			InputStream is = null;
-			is = openFileInput("tiles.txt");
-			new BufferedReader(new InputStreamReader(is));
-			getFiles(false);
-			new checkVersion().execute();
-		} catch (FileNotFoundException e2) {
-			getFiles(true);
-		}
+	protected void retrieve() {
+		new ToLocalTile().execute();// retrive Tile to Local and set up
+		createFavorite();// Create a new empty Favorite List for user
+		new ToLocalCoupon().execute();
 	}
 
-	class MyTimerTask extends TimerTask {
-		public void run() {
-			new checkVersion().execute();
-		}
-	}
-
-	public class checkVersion extends AsyncTask<Void, Boolean, String> {
+	protected class ToLocalCoupon extends AsyncTask<Void, Void, List<Bitmap>> {
 
 		@Override
-		protected String doInBackground(Void... bool) {
-			URLConnection url = null;
+		protected List<Bitmap> doInBackground(Void... v) {
+			URLConnection urlConnection = null;
 			try {
-				url = new URL(
-						"http://dealshype.azurewebsites.net/staticFiles/jsonVersion.txt")
-						.openConnection();
-				BufferedReader rd = new BufferedReader(new InputStreamReader(
-						url.getInputStream()));
-				String sCurrVersion = null, line;
-				while ((line = rd.readLine()) != null) {
-					sCurrVersion = line;
-					// imporve
+				urlConnection = new URL(
+						"http://dealshype.azurewebsites.net/staticFiles/coupons.txt")
+						.openConnection();// open URL
+				InputStream inputStream = urlConnection.getInputStream();
+				String sJsonArray = convertIsToString(inputStream);
+				// Convert is to String
+				FileOutputStream fileOutputStream = openFileOutput(
+						"coupons.txt", Context.MODE_PRIVATE);
+				// Create fos for coupons.txt
+				fileOutputStream.write(sJsonArray.getBytes());
+				// Write to external coupons.txt
+				couponJsonArray = new JSONArray(sJsonArray);
+				// write to couponJsonArray
+				JSONObject currentCouponJson;
+				List<Bitmap> BitmapList = new ArrayList<Bitmap>();
+				Bitmap bitmap;
+				URL imageURL;
+				for (int index = 0; index < couponJsonArray.length(); index++) {
+					currentCouponJson = couponJsonArray.getJSONObject(index);
+					String sImageUrl = currentCouponJson.getString("Image");
+					// sUrl[0]? current Tile Image URL
+					imageURL = new URL(sImageUrl);
+					bitmap = BitmapFactory.decodeStream(imageURL
+							.openConnection().getInputStream());
+					BitmapList.add(bitmap);
 				}
-				return sCurrVersion;
-			} catch (MalformedURLException e2) {
-				e2.printStackTrace();
-			} catch (IOException e2) {
-				return "0";
-			}
-			return null;
-
-		}
-
-		protected void onPostExecute(String sNewVersion) {
-
-			String sOldVersion = null;
-			InputStream is = null;
-			int oldVersion;
-			int newVersion = Integer.parseInt(sNewVersion);
-			try {
-				is = openFileInput("jsonVersion.txt");
-				BufferedReader reader = new BufferedReader(
-						new InputStreamReader(is));
-				try {
-					sOldVersion = reader.readLine();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				oldVersion = Integer.parseInt(sOldVersion);
-				if (newVersion > oldVersion) {
-					getFiles(true);
-				}
-			} catch (FileNotFoundException e2) {
-				try {
-					FileOutputStream outputStream = openFileOutput(
-							"jsonVersion.txt", Context.MODE_PRIVATE);
-					outputStream.write(sNewVersion.getBytes());
-					outputStream.close();
-					is = openFileInput("jsonVersion.txt");
-					getFiles(true);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-
-	}
-
-	public class getFile extends AsyncTask<Void, Void, String> {
-		String sUrl;
-		String filename;
-
-		protected getFile(String url, String filename) {
-			this.sUrl = url;
-			this.filename = filename;
-		}
-
-		@Override
-		protected String doInBackground(Void... v) {
-			URLConnection url = null;
-			try {
-				url = new URL(sUrl).openConnection();
-				BufferedReader rd = new BufferedReader(new InputStreamReader(
-						url.getInputStream()));
-				String line = null, s = null;
-				StringBuilder sb = new StringBuilder();
-				while ((line = rd.readLine()) != null) {
-					sb.append(line);
-				}
-				s = sb.toString();
-				return s;
+				inputStream.close();
+				return BitmapList;
 			} catch (MalformedURLException e2) {
 				e2.printStackTrace();
 			} catch (IOException e2) {
 				e2.printStackTrace();
+			} catch (JSONException e) {
+				e.printStackTrace();
 			}
 			return null;
 		}
 
-		protected void onPostExecute(String s) {
-			FileOutputStream fs = null;
-			InputStream is = null;
+		protected void onPostExecute(List<Bitmap> BitmapList) {
 			try {
-				is = openFileInput(filename);
-				is.close();
-				fs = openFileOutput(filename, Context.MODE_PRIVATE);
-				fs.write(s.getBytes());
-				fs.close();
-				tilesjsonArray = getTileJsonArray();
-				setLayout(tilesjsonArray);
-			} catch (FileNotFoundException e) {
-				try {
-					fs = openFileOutput(filename, Context.MODE_PRIVATE);
-					try {
-						fs.write(s.getBytes());
-						fs.close();
-						tilesjsonArray = getTileJsonArray();
-						setLayout(tilesjsonArray);
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-				} catch (FileNotFoundException e1) {
-					e1.printStackTrace();
+				Bitmap bitmap;
+				FileOutputStream fileOutputStream = null;
+				for (int index = 0; index < BitmapList.size(); index++) {
+					bitmap = BitmapList.get(index);
+					// Current Image bitmap
+					fileOutputStream = Tiles.this.openFileOutput("coupon"
+							+ (index + 1) + ".png", Context.MODE_PRIVATE);
+					// Write current image to external fos
+					bitmap.compress(CompressFormat.PNG, 100, fileOutputStream);
 				}
+				fileOutputStream.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -214,115 +141,199 @@ public class Tiles extends Activity implements OnClickListener,
 		}
 	}
 
-	public class saveDownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-		ImageView bmImage;
-		String picName;
-
-		public saveDownloadImageTask(ImageView bmImage, String picName) {
-			this.bmImage = bmImage;
-			this.picName = picName;
-		}
-
-		protected Bitmap doInBackground(String... urls) {
-			String urldisplay = urls[0];
-			Bitmap mIcon11 = null;
-			try {
-				InputStream in = new java.net.URL(urldisplay).openStream();
-				mIcon11 = BitmapFactory.decodeStream(in);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			return mIcon11;
-		}
-
-		protected void onPostExecute(Bitmap result) {
-			bmImage.setImageBitmap(result);
-			FileOutputStream fos;
-			try {
-				fos = Tiles.this.openFileOutput(picName, Context.MODE_PRIVATE);
-				result.compress(CompressFormat.PNG, 100, fos);
-				try {
-					fos.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-
-		}
-	}
-
-	private JSONArray getTileJsonArray() {
-		InputStream is = null;
+	protected void createFavorite() {
 		try {
-			is = openFileInput("tiles.txt");
-			String result = convertIsToString(is);
-			JSONArray tileJsonArray;
-			try {
-				tileJsonArray = new JSONArray(result);
-				return tileJsonArray;
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-		} catch (FileNotFoundException e2) {
-			getFiles(true);
-		}
-		return null;
-	}
-
-	private void getFiles(Boolean b) {
-		if (b) {
-			new getFile(
-					"http://dealshype.azurewebsites.net/staticFiles/tiles.txt",
-					"tiles.txt").execute();
-			new getFile(
-					"http://dealshype.azurewebsites.net/staticFiles/coupons.txt",
-					"coupons.txt").execute();
-		} else {
-			tilesjsonArray = getTileJsonArray();
-			setLayout(tilesjsonArray);
-		}
-	}
-
-	private void setLayout(JSONArray tilesjsonArray) {
-		int i;
-		for (i = 0; i < tilesjsonArray.length(); i++) {
-			int index = i + 1;
-			loadBitmap((ImageView) findViewById(idA[i]), Tiles.this, "tile"
-					+ index + ".png", i, tilesjsonArray);
-		}
-		if (i < idA.length & (i % 2 == 1)) {
-			((ImageView) findViewById(idA[i])).setVisibility(View.INVISIBLE);
-		}
-		for (i = i + 1; i < idA.length; i++) {
-			((ImageView) findViewById(idA[i])).setVisibility(View.GONE);
-		}
-	}
-
-	public void loadBitmap(ImageView bmImage, Context context, String picName,
-			int i, JSONArray tilesjsonArray) {
-		Bitmap b = null;
-		InputStream is;
-		try {
-			is = openFileInput(picName);
-			b = BitmapFactory.decodeStream(is);
-			is.close();
-		} catch (FileNotFoundException e) {
-			JSONObject currentTileJson;
-			try {
-				currentTileJson = (JSONObject) tilesjsonArray.get(i);
-				new saveDownloadImageTask((ImageView) findViewById(idA[i]),
-						picName).execute(currentTileJson.getString("Image"));
-			} catch (JSONException e1) {
-				e1.printStackTrace();
-			}
-
-			e.printStackTrace();
+			FileOutputStream fileOutputStream = openFileOutput("favorite.txt",
+					Context.MODE_PRIVATE);
+			fileOutputStream.write("[]".getBytes());
+			fileOutputStream.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		bmImage.setImageBitmap(b);
+	}
+
+	protected class ToLocalTile extends AsyncTask<Void, Void, List<Bitmap>> {
+		ProgressDialog pDialog;
+
+		protected void onPreExecute() {
+			pDialog = new ProgressDialog(Tiles.this);
+			pDialog.setTitle("Retrieving...");
+			pDialog.setMessage("Please wait...");
+			pDialog.setCancelable(false);
+			pDialog.setIndeterminate(true);
+			pDialog.show();
+		}
+
+		@Override
+		protected List<Bitmap> doInBackground(Void... v) {
+			URLConnection urlConnection = null;
+			try {
+				urlConnection = new URL(
+						"http://dealshype.azurewebsites.net/staticFiles/tiles.txt")
+						.openConnection();// open URL
+				InputStream inputStream = urlConnection.getInputStream();
+				String sFile = convertIsToString(inputStream);
+				FileOutputStream fileOutputStream = openFileOutput("tiles.txt",
+						Context.MODE_PRIVATE);
+				fileOutputStream.write(sFile.getBytes());
+				fileOutputStream.close();
+				setProgress(10);
+				// Convert is to String
+				tilesjsonArray = new JSONArray(sFile);// write to JsonArray
+				JSONObject currentTileJson;
+				// add TileJsonArray is to isList
+				URL imageURL = null;
+				Bitmap bitmap;
+				List<Bitmap> bitmapList = new ArrayList<Bitmap>();
+				for (int index = 0; index < tilesjsonArray.length(); index++) {
+					currentTileJson = tilesjsonArray.getJSONObject(index);
+					String sImageUrl = currentTileJson.getString("Image");
+					imageURL = new URL(sImageUrl);
+					bitmap = BitmapFactory.decodeStream(imageURL
+							.openConnection().getInputStream());
+					FileOutputStream fileOutputStream2 = Tiles.this
+							.openFileOutput("tile" + (index + 1) + ".png",
+									Context.MODE_PRIVATE);
+					// Write current image to external fos
+					bitmap.compress(CompressFormat.PNG, 100, fileOutputStream2);
+					bitmapList.add(bitmap);
+				}
+				return bitmapList;
+			} catch (MalformedURLException e2) {
+				e2.printStackTrace();
+			} catch (IOException e2) {
+				e2.printStackTrace();
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			return null;
+
+		}
+
+		protected void onPostExecute(List<Bitmap> bitmapList) {
+			pDialog.dismiss();
+			for (int index = 0; index < bitmapList.size(); index++) {
+				ImageView imageview = (ImageView) findViewById(idA[index]);
+				imageview.setImageBitmap(bitmapList.get(index));
+			}
+		}
+	}
+
+	protected class MyTimerTask extends TimerTask {
+		public void run() {
+			new CheckVersion().execute();
+		}
+	}
+
+	protected class CheckVersion extends AsyncTask<Void, Boolean, String> {
+		ProgressDialog pDialog;
+
+		@Override
+		protected void onPreExecute() {
+			pDialog = new ProgressDialog(Tiles.this);
+			pDialog.setTitle("Checking For New Version...");
+			pDialog.setMessage("Please wait...");
+			pDialog.setCancelable(false);
+			pDialog.setIndeterminate(true);
+			pDialog.show();
+		}
+
+		@Override
+		protected String doInBackground(Void... v) {
+			try {
+
+				URLConnection urlConnection = new URL(
+						"http://dealshype.azurewebsites.net/staticFiles/jsonVersion.txt")
+						.openConnection();// open Version URL
+				BufferedReader bufferReader = new BufferedReader(
+						new InputStreamReader(urlConnection.getInputStream()));
+				String sNewVersion = bufferReader.readLine();
+				// get the new Version String
+				return sNewVersion;
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		protected void onPostExecute(String sNewVersion) {
+			try {
+				int newVersion = Integer.parseInt(sNewVersion);// new Version
+				InputStream inputStream = openFileInput("jsonVersion.txt");
+				// Open the oldVersion
+				BufferedReader bufferReader = new BufferedReader(
+						new InputStreamReader(inputStream));
+				String sOldVersion = bufferReader.readLine();
+				int oldVersion = Integer.parseInt(sOldVersion);// old version
+				if (newVersion > oldVersion)
+
+					retrieve();
+				// if need updated, retrieve data from server
+				else
+					setLayoutFromLocal();
+				pDialog.dismiss();
+				// no need to update, just set up the page from storage
+			} catch (FileNotFoundException e) {
+				try {
+					FileOutputStream outputStream = openFileOutput(
+							"jsonVersion.txt", Context.MODE_PRIVATE);
+					// Write new version to jsonVersion.txt
+					outputStream.write(sNewVersion.getBytes());
+					outputStream.close();
+					pDialog.dismiss();
+					retrieve();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	protected void setLayoutFromLocal() {
+		readFromLocal();
+		int index;
+		for (index = 0; index < tilesjsonArray.length(); index++) {
+			// Set tile pic for each position
+			try {
+				ImageView imageView = (ImageView) findViewById(idA[index]);
+				InputStream inputStream = openFileInput("tile" + (index + 1)
+						+ ".png");
+				Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+				inputStream.close();
+				imageView.setImageBitmap(bitmap);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		// Extra position to invisible
+		if (index < 18 && index % 2 == 1) {
+			ImageView imageView = (ImageView) findViewById(idA[index]);
+			imageView.setVisibility(View.INVISIBLE);
+			index += 1;
+		}
+		while (index < 18) {
+			ImageView imageView = (ImageView) findViewById(idA[index]);
+			imageView.setVisibility(View.GONE);
+			index += 1;
+		}
+
+	}
+
+	protected void readFromLocal() {
+		try {
+			InputStream inputStream = openFileInput("tiles.txt");
+			String sTileJsonArray = convertIsToString(inputStream);
+			tilesjsonArray = new JSONArray(sTileJsonArray);
+			inputStream = openFileInput("coupons.txt");
+			String sCouponJsonArray = convertIsToString(inputStream);
+			couponJsonArray = new JSONArray(sCouponJsonArray);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+
+		}
 	}
 
 	public void onClick(View view) {
@@ -340,43 +351,27 @@ public class Tiles extends Activity implements OnClickListener,
 
 	}
 
-	public Map<String, String> couponToTile() {
-		Map<String, String> mapCouponToTile = new HashMap<String, String>();
-		mapKeyToTileObject = new HashMap<String, JSONObject>();
-		for (int i = 0; i < tilesjsonArray.length(); i++) {
-			JSONObject currentTileJsonObject;
-			try {
-				currentTileJsonObject = (JSONObject) tilesjsonArray.get(i);
-				mapCouponToTile.put(currentTileJsonObject.getString("Link")
-						.split("-")[1], currentTileJsonObject
-						.getString("Image"));
-				mapKeyToTileObject.put(currentTileJsonObject.getString("Link")
-						.split("-")[1], currentTileJsonObject);
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-		}
-		return mapCouponToTile;
-	}
-
 	public void toCoupon(View view) {
 		int id = view.getId();
 		for (int index = 0; index < idA.length; index++) {
-			if (id == idA[index]) {
+			if (id == idA[index]) {// Current id you clicked
 				try {
-					JSONObject clickedTileJson = (JSONObject) tilesjsonArray
-							.get(index);
+					JSONObject clickedTileJson = tilesjsonArray
+							.getJSONObject(index);// Current tile you clicked
 					if (clickedTileJson.getString("Link").split("-")[0]
-							.equals("coupon")) {
+							.equals("coupon")) {// You clicked on a coupon
 						Intent iCoupon = new Intent("com.example.deals.Coupon");
-						iCoupon.putExtra("idindex",
+						iCoupon.putExtra("idKey",
 								clickedTileJson.getString("Link").split("-")[1]);
-						iCoupon.putExtra("idjsonobject",
+						// Pass the key for tile to coupon
+						iCoupon.putExtra("idJsonObject",
 								clickedTileJson.toString());
+						// Pass the current Tile Object(for favorite function)
 						startActivity(iCoupon);
-					} else {
+					} else {// You clicked on a webview
 						Intent iWebView = new Intent(
 								"com.example.deals.Browser");
+						// Open webview intent
 						iWebView.putExtra("idurl",
 								clickedTileJson.getString("Link").split("-")[1]);
 						startActivity(iWebView);
@@ -398,7 +393,7 @@ public class Tiles extends Activity implements OnClickListener,
 		return false;
 	}
 
-	public String convertIsToString(InputStream is) {
+	public static String convertIsToString(InputStream is) {
 		BufferedReader bufferReader = null;
 		try {
 			bufferReader = new BufferedReader(
@@ -426,18 +421,9 @@ public class Tiles extends Activity implements OnClickListener,
 		return result;
 	}
 
-	public void onRestart() {
+	protected void onRestart() {
 		super.onRestart();
-		setContentView(R.layout.activity_tiles);
-		getFiles(false);
-		new checkVersion().execute();
-		bFavor = (ImageButton) findViewById(R.id.bFavor);
-		bSearch = (ImageButton) findViewById(R.id.bSearch);
-		ivStore = (ImageView) findViewById(R.id.ivStore);
-		etSearch = (EditText) findViewById(R.id.etSearch);
-		bFavor.setOnClickListener(this);
-		bSearch.setOnClickListener(this);
-		etSearch.setOnEditorActionListener(this);
+
 	}
 
 }
