@@ -1,12 +1,9 @@
 package com.example.deals;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,11 +13,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -29,15 +23,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class Coupon extends Activity {
-	ImageView iv, ivCoupon;
-	String index;
-	int image;
-	JSONObject currentCoupon, currentTileObject;
-	public static JSONArray FavoriteJsonArray, tilesjsonArray;
+	int image, order;
+	public static JSONObject currentCouponJsonObject, currentTileObject;
+	public static JSONArray favoriteJsonArray;
+	ImageView ivCoupon;
 	TextView tvMain, tvDetail;
-	String sMain, sDetail, sText1;
-	Button bRedeem, bFavor;
-	int order;
+	Button bRedeem, bFavor, bStore;
+	String key, sMain, sDetail, sRedeem;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,288 +37,157 @@ public class Coupon extends Activity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_coupon);
 		Intent intent = getIntent();
-		index = intent.getStringExtra("idindex");
+		key = intent.getStringExtra("idKey");
+		// Key of tile to coupon
 		try {
 			currentTileObject = new JSONObject(
-					intent.getStringExtra("idjsonobject"));
+					intent.getStringExtra("idJsonObject"));
+			// Get the clicked current tile object from Tiles
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		currentCoupon = getCoupon(index);
-		SetLayout(index);
-
+		getCurrentCouponJsonObject(key);
+		// Get the current coupon json object by using the key
+		setLayoutFromLocal();
+		// Set layout from local coupon picture
 	}
 
-	private void SetLayout(String index) {
-		ivCoupon = (ImageView) findViewById(R.id.ivc);
-		bFavor = (Button) findViewById(R.id.bFavor);
-		loadBitmap(ivCoupon, Coupon.this, "coupon" + order + ".png", order,
-				tilesjsonArray);
-		FavoriteJsonArray = getFavoriteArray();
-		if (!notAlreadyFavorited(index, FavoriteJsonArray)) {
-			bFavor.setBackgroundResource(R.drawable.removefavbutton);
-			bFavor.setText("Remove Favorite");
-		}
-		String sMain = null, sDetail = null, sText1 = null;
+	protected void getCurrentCouponJsonObject(String key) {
 		try {
-			sMain = currentCoupon.getString("Main Discount");
-			sDetail = currentCoupon.getString("Details");
-			sText1 = currentCoupon.getString("Text1");
+			JSONObject currentJsonObject;
+			for (int index = 0; index < Tiles.couponJsonArray.length(); index++) {
+				currentJsonObject = Tiles.couponJsonArray.getJSONObject(index);
+				if (key.equals(currentJsonObject.getString("Image"))) {
+					// Corresponding Coupon Json Object (link - image)
+					order = index + 1;
+					currentCouponJsonObject = currentJsonObject;
+				}
+			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void setLayoutFromLocal() {
+		ivCoupon = (ImageView) findViewById(R.id.ivc);
 		tvMain = (TextView) findViewById(R.id.tvMainDis);
 		tvDetail = (TextView) findViewById(R.id.tvDetail);
 		bRedeem = (Button) findViewById(R.id.bRedeem);
-		tvMain.setText(sMain);
-		tvDetail.setText(sDetail);
-		bRedeem.setText(sText1);
-
-	}
-
-	public void loadBitmap(ImageView bmImage, Context context, String picName,
-			int i, JSONArray tilesjsonArray) {
-		Bitmap b = null;
-		InputStream is;
+		bStore = (Button) findViewById(R.id.bStore);
+		bFavor = (Button) findViewById(R.id.bFavor);
+		InputStream inputStream;
 		try {
-			is = openFileInput(picName);
-			b = BitmapFactory.decodeStream(is);
-			is.close();
+			inputStream = openFileInput("coupon" + order + ".png");
+			Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+			// Get the coupon pic bitmap
+			inputStream.close();
+			ivCoupon.setImageBitmap(bitmap);
+			// Set image to coupon bitmap
 		} catch (FileNotFoundException e) {
-			try {
-				new saveDownloadImageTask(bmImage, i, picName)
-						.execute(currentCoupon.getString("Image"));
-			} catch (JSONException e1) {
-				e1.printStackTrace();
-			}
-
 			e.printStackTrace();
 		} catch (IOException e) {
-			Log.v("error", "io exception");
 			e.printStackTrace();
 		}
-		bmImage.setImageBitmap(b);
-		bmImage.setVisibility(View.VISIBLE);
-	}
-
-	public class saveDownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-		ImageView bmImage;
-		int index;
-		String picname;
-
-		public saveDownloadImageTask(ImageView bmImage, int i, String picname) {
-			this.bmImage = bmImage;
-			this.index = i;
-			this.picname = picname;
-		}
-
-		protected Bitmap doInBackground(String... urls) {
-			String urldisplay = urls[0];
-			Bitmap mIcon11 = null;
-			try {
-				InputStream in = new java.net.URL(urldisplay).openStream();
-				mIcon11 = BitmapFactory.decodeStream(in);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			return mIcon11;
-		}
-
-		protected void onPostExecute(Bitmap result) {
-			bmImage.setImageBitmap(result);
-			FileOutputStream fos;
-			try {
-				fos = Coupon.this.openFileOutput(picname, Context.MODE_PRIVATE);
-				result.compress(CompressFormat.PNG, 100, fos);
-				try {
-					fos.close();
-				} catch (IOException e) {
-					Toast.makeText(Coupon.this,
-							"please connect to the internet",
-							Toast.LENGTH_SHORT).show();
-				}
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-
-		}
-	}
-
-	@SuppressWarnings("resource")
-	private JSONObject getCoupon(String key) {
-		InputStream is = null;
 		try {
-			is = openFileInput("coupons.txt");
-		} catch (FileNotFoundException e2) {
-			e2.printStackTrace();
-		}
-		BufferedReader bReader = null;
-		try {
-			bReader = new BufferedReader(new InputStreamReader(is, "UTF-8"), 8);
-		} catch (UnsupportedEncodingException e1) {
-			e1.printStackTrace();
-		}
-		String line = null;
-		StringBuilder stringBuilder = new StringBuilder();
-		String result = null;
-		try {
-			while ((line = bReader.readLine()) != null) {
-				stringBuilder.append(line);
-			}
-			result = stringBuilder.toString();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (is != null)
-				try {
-					is.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-		}
-
-		JSONArray jsonArray;
-		try {
-			jsonArray = new JSONArray(result);
-			for (int i = 0; i < jsonArray.length(); i++) {
-				JSONObject currentObject = (JSONObject) jsonArray.get(i);
-				if (key.equals(currentObject.getString("Image"))) {
-					order = i;
-					return currentObject;
-				}
-			}
+			sMain = currentCouponJsonObject.getString("Main Discount");
+			sDetail = currentCouponJsonObject.getString("Details");
+			sRedeem = currentCouponJsonObject.getString("Text1");
+			// Get corresponding text field
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		return null;
-
+		tvMain.setText(sMain);
+		tvDetail.setText(sDetail);
+		bRedeem.setText(sRedeem);
+		// Set corresponding text field
+		getFavoriteArray();
+		// Get Favorite Json Array from Local
+		if (alreadyFavorited()) {// Set the favorite button image
+			bFavor.setBackgroundResource(R.drawable.removefavbutton);
+			bFavor.setText("   Remove Favorite");
+		}
 	}
 
 	public void favoriteIt(View view) {
-		FavoriteJsonArray = getFavoriteArray();
-		if (notAlreadyFavorited(index, FavoriteJsonArray)) {
-			FavoriteJsonArray = addFavorite(currentTileObject,
-					FavoriteJsonArray);
-			bFavor.setBackgroundResource(R.drawable.removefavbutton);
-			bFavor.setText("Remove Favorite");
-		} else {
-			FavoriteJsonArray = removeFavorite(currentTileObject,
-					FavoriteJsonArray);
+		if (alreadyFavorited()) {// Remove from favorite if already existeds
+			removeFromFavorite();
 			bFavor.setBackgroundResource(R.drawable.favouritebutton);
-			bFavor.setText("Add To Favorite!");
+			bFavor.setText("    Add Favorite!");
+		} else {// Add to favorite if not ex
+			addToFavorite();
+			bFavor.setBackgroundResource(R.drawable.removefavbutton);
+			bFavor.setText("   Remove Favorite!");
 		}
-		String sNewFavorite = FavoriteJsonArray.toString();
-		writeToFile(sNewFavorite);
+		String sNewFavoriteJsonArray = favoriteJsonArray.toString();
+		try {
+			FileOutputStream outputStream = openFileOutput("favorite.txt",
+					Context.MODE_PRIVATE);
+			outputStream.write(sNewFavoriteJsonArray.getBytes());
+			// Save the new favorite Json Array to file
+			outputStream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 	}
 
-	private JSONArray getFavoriteArray() {
-		InputStream is = null;
+	private void getFavoriteArray() {
 		try {
-			is = openFileInput("favorite.txt");
-		} catch (FileNotFoundException e2) {
-			e2.printStackTrace();
-			FileOutputStream fs = null;
-			try {
-				fs = openFileOutput("favorite.txt", Context.MODE_PRIVATE);
-				fs.write("[]".getBytes());
-				fs.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		try {
-			is = openFileInput("favorite.txt");
-		} catch (FileNotFoundException e2) {
-			e2.printStackTrace();
-		}
-		BufferedReader bufferReader = null;
-		try {
-			bufferReader = new BufferedReader(
-					new InputStreamReader(is, "UTF-8"), 8);
-		} catch (UnsupportedEncodingException e1) {
-			e1.printStackTrace();
-		}
-		StringBuilder stringBuilder = new StringBuilder();
-		String result = null;
-		String line;
-		try {
-			while ((line = bufferReader.readLine()) != null) {
-				stringBuilder.append(line);
-			}
-			result = stringBuilder.toString();
-		} catch (IOException e) {
+			InputStream inputStream = openFileInput("favorite.txt");
+			String sFavoriteJsonArray = Tiles.convertIsToString(inputStream);
+			// Get the Favorite Json Array From local
+			favoriteJsonArray = new JSONArray(sFavoriteJsonArray);
+		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-		} finally {
-			if (is != null)
-				try {
-					is.close();
-				} catch (Exception e) {
-				}
-		}
-		try {
-			JSONArray jsonArray = new JSONArray(result);
-			return jsonArray;
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		return null;
 	}
 
-	private boolean notAlreadyFavorited(String index, JSONArray favoriteArray) {
-		for (int i = 0; i < favoriteArray.length(); i++) {
-			JSONObject temJsonObject;
+	private boolean alreadyFavorited() {
+		for (int index = 0; index < favoriteJsonArray.length(); index++) {
+			JSONObject currentJsonObject;
 			try {
-				temJsonObject = (JSONObject) favoriteArray.get(i);
-				if (index.equals(temJsonObject.getString("Link").split("-")[1])) {
-					return false;
+				currentJsonObject = favoriteJsonArray.getJSONObject(index);
+				if (key.equals(currentJsonObject.getString("Link").split("-")[1])) {
+					// Current Tile Json Object already in Favorite Json Array
+					return true;
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
 		}
-		return true;
+		// Current Tile Json Object not in Favorite Json Array
+		return false;
 	}
 
-	private JSONArray addFavorite(JSONObject currentTile,
-			JSONArray favoriteArray) {
-		favoriteArray.put(currentTile);
+	private void addToFavorite() {
+		// Put current Tile Object into favorite Json Array
+		favoriteJsonArray.put(currentTileObject);
 		Toast.makeText(Coupon.this, "Add To Favorite", Toast.LENGTH_SHORT)
 				.show();
-		return favoriteArray;
 	}
 
-	private JSONArray removeFavorite(JSONObject currentTile,
-			JSONArray favoriteArray) {
-		JSONArray newFavoriteArray = new JSONArray();
-		for (int i = 0; i < favoriteArray.length(); i++) {
-			JSONObject temJsonObject;
+	private void removeFromFavorite() {
+		JSONArray newFavoriteJsonArray = new JSONArray();
+		JSONObject currentJsonObject;
+		for (int index = 0; index < favoriteJsonArray.length(); index++) {
 			try {
-				temJsonObject = (JSONObject) favoriteArray.get(i);
-				if (!currentTile.getString("Order").equals(
-						temJsonObject.getString("Order"))) {
-					newFavoriteArray.put(temJsonObject);
+				currentJsonObject = favoriteJsonArray.getJSONObject(index);
+				if (!currentTileObject.getString("Order").equals(
+						currentJsonObject.getString("Order"))) {
+					// Put old Favorite Tile Object back into favorite Json
+					// Array
+					newFavoriteJsonArray.put(currentJsonObject);
 				}
+				// Current Tile Object not put into favorite Json Array
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
 		}
-		Toast.makeText(Coupon.this, "Remove Favorite", Toast.LENGTH_SHORT)
+		Toast.makeText(Coupon.this, "Remove From Favorite", Toast.LENGTH_SHORT)
 				.show();
-		return newFavoriteArray;
-	}
-
-	private void writeToFile(String sFavorite) {
-		FileOutputStream fs = null;
-		try {
-			fs = openFileOutput("favorite.txt", Context.MODE_PRIVATE);
-			fs.write(sFavorite.getBytes());
-			fs.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		favoriteJsonArray = newFavoriteJsonArray;
 	}
 
 	public void back(View view) {
@@ -335,7 +196,7 @@ public class Coupon extends Activity {
 
 	public void sharePhoto(View view) {
 		Intent iShare = new Intent("com.example.deals.Share");
-		iShare.putExtra("idjsonobject", currentCoupon.toString());
+		iShare.putExtra("idjsonobject", currentCouponJsonObject.toString());
 		iShare.putExtra("idimage", image);
 		startActivity(iShare);
 	}
