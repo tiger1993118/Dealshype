@@ -38,6 +38,7 @@
         android:layout_height="220dp"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/bar"
+        android:onClick="reloadImage"
         android:paddingLeft="@dimen/coupon_horizontal_margin"
         android:paddingRight="@dimen/coupon_horizontal_margin"
         android:paddingTop="@dimen/coupon_vertical_margin"
