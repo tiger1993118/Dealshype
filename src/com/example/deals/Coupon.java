@@ -194,6 +194,22 @@ public class Coupon extends Activity {
 		finish();
 	}
 
+	public void reloadImage(View view) {
+		InputStream inputStream;
+		try {
+			inputStream = openFileInput("coupon" + order + ".png");
+			Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+			// Get the coupon pic bitmap
+			inputStream.close();
+			ivCoupon.setImageBitmap(bitmap);
+			// Set image to coupon bitmap
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public void sharePhoto(View view) {
 		Intent iShare = new Intent("com.example.deals.Share");
 		iShare.putExtra("idjsonobject", currentCouponJsonObject.toString());
