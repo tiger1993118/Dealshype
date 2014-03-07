@@ -27,18 +27,16 @@ import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.KeyEvent;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.TextView.OnEditorActionListener;
 
-public class Tiles extends Activity implements OnClickListener,
-		OnEditorActionListener {
+public class Tiles extends Activity implements OnClickListener {
 
 	ImageButton bFavor, bSearch;
 	ImageView ivStore;
@@ -46,7 +44,8 @@ public class Tiles extends Activity implements OnClickListener,
 	int[] idA = { R.id.t1, R.id.t2, R.id.t3, R.id.t4, R.id.t5, R.id.t6,
 			R.id.t7, R.id.t8, R.id.t9, R.id.t10, R.id.t11, R.id.t12, R.id.t13,
 			R.id.t14, R.id.t15, R.id.t16, R.id.t17, R.id.t18 };
-	public static JSONArray tilesjsonArray, couponJsonArray;
+	public static JSONArray tilesjsonArray, couponJsonArray, searchJsonArray;
+	public static String keyWord = "";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +66,7 @@ public class Tiles extends Activity implements OnClickListener,
 		etSearch = (EditText) findViewById(R.id.etSearch);
 		bFavor.setOnClickListener(this);
 		bSearch.setOnClickListener(this);
-		etSearch.setOnEditorActionListener(this);
-
+		Search();
 	}
 
 	protected void retrieve() {
@@ -212,9 +210,20 @@ public class Tiles extends Activity implements OnClickListener,
 
 		protected void onPostExecute(List<Bitmap> bitmapList) {
 			pDialog.dismiss();
-			for (int index = 0; index < bitmapList.size(); index++) {
+			int index;
+			for (index = 0; index < bitmapList.size(); index++) {
 				ImageView imageview = (ImageView) findViewById(idA[index]);
 				imageview.setImageBitmap(bitmapList.get(index));
+			}
+			if (index < 18 && index % 2 == 1) {
+				ImageView imageView = (ImageView) findViewById(idA[index]);
+				imageView.setVisibility(View.INVISIBLE);
+				index += 1;
+			}
+			while (index < 18) {
+				ImageView imageView = (ImageView) findViewById(idA[index]);
+				imageView.setVisibility(View.GONE);
+				index += 1;
 			}
 		}
 	}
@@ -266,7 +275,6 @@ public class Tiles extends Activity implements OnClickListener,
 				String sOldVersion = bufferReader.readLine();
 				int oldVersion = Integer.parseInt(sOldVersion);// old version
 				if (newVersion > oldVersion)
-
 					retrieve();
 				// if need updated, retrieve data from server
 				else
@@ -303,6 +311,7 @@ public class Tiles extends Activity implements OnClickListener,
 				Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
 				inputStream.close();
 				imageView.setImageBitmap(bitmap);
+				imageView.setVisibility(View.VISIBLE);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -329,10 +338,13 @@ public class Tiles extends Activity implements OnClickListener,
 			inputStream = openFileInput("coupons.txt");
 			String sCouponJsonArray = convertIsToString(inputStream);
 			couponJsonArray = new JSONArray(sCouponJsonArray);
+			inputStream.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (JSONException e) {
-
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -356,41 +368,54 @@ public class Tiles extends Activity implements OnClickListener,
 		for (int index = 0; index < idA.length; index++) {
 			if (id == idA[index]) {// Current id you clicked
 				try {
-					JSONObject clickedTileJson = tilesjsonArray
-							.getJSONObject(index);// Current tile you clicked
-					if (clickedTileJson.getString("Link").split("-")[0]
-							.equals("coupon")) {// You clicked on a coupon
-						Intent iCoupon = new Intent("com.example.deals.Coupon");
-						iCoupon.putExtra("idKey",
-								clickedTileJson.getString("Link").split("-")[1]);
-						// Pass the key for tile to coupon
-						iCoupon.putExtra("idJsonObject",
-								clickedTileJson.toString());
-						// Pass the current Tile Object(for favorite function)
-						startActivity(iCoupon);
-					} else {// You clicked on a webview
-						Intent iWebView = new Intent(
-								"com.example.deals.Browser");
-						// Open webview intent
-						iWebView.putExtra("idurl",
-								clickedTileJson.getString("Link").split("-")[1]);
-						startActivity(iWebView);
+					if (keyWord.length() == 0) {
+						JSONObject clickedTileJson = tilesjsonArray
+								.getJSONObject(index);// Current tile you
+														// clicked
+						if (clickedTileJson.getString("Link").split("-")[0]
+								.equals("coupon")) {// You clicked on a coupon
+							Intent iCoupon = new Intent(
+									"com.example.deals.Coupon");
+							iCoupon.putExtra("idKey", clickedTileJson
+									.getString("Link").split("-")[1]);
+							// Pass the key for tile to coupon
+							iCoupon.putExtra("idJsonObject",
+									clickedTileJson.toString());
+							// Pass the current Tile Object(for favorite
+							// function)
+							startActivity(iCoupon);
+						} else {// You clicked on a webview
+							Intent iWebView = new Intent(
+									"com.example.deals.Browser");
+							// Open webview intent
+							iWebView.putExtra("idurl", clickedTileJson
+									.getString("Link").split("-")[1]);
+							startActivity(iWebView);
+						}
+					} else {
+						JSONObject clickedTileJson = searchJsonArray
+								.getJSONObject(index);// Current tile you
+														// clicked
+						if (clickedTileJson.getString("Link").split("-")[0]
+								.equals("coupon")) {// You clicked on a coupon
+							Intent iCoupon = new Intent(
+									"com.example.deals.Coupon");
+							iCoupon.putExtra("idKey", clickedTileJson
+									.getString("Link").split("-")[1]);
+							// Pass the key for tile to coupon
+							iCoupon.putExtra("idJsonObject",
+									clickedTileJson.toString());
+							// Pass the current Tile Object(for favorite
+							// function)
+							startActivity(iCoupon);
+						}
 					}
-
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
 			}
 		}
 
-	}
-
-	public boolean onEditorAction(TextView arg0, int arg1, KeyEvent arg2) {
-		String keyWord = etSearch.getText().toString();
-		Intent iTiles = new Intent("com.example.deals.Search");
-		iTiles.putExtra("KeyWord", keyWord);
-		startActivity(iTiles);
-		return false;
 	}
 
 	public static String convertIsToString(InputStream is) {
@@ -423,7 +448,106 @@ public class Tiles extends Activity implements OnClickListener,
 
 	protected void onRestart() {
 		super.onRestart();
+	}
 
+	private void Search() {
+		etSearch.addTextChangedListener(new TextWatcher() {
+
+			@Override
+			public void onTextChanged(CharSequence cs, int start, int before,
+					int count) {
+				if (cs.length() == 0) {
+					setLayoutFromLocal();
+					keyWord = "";
+				} else {
+					keyWord = cs.toString().toLowerCase();
+					searchJsonArray = new JSONArray();
+					JSONObject currentCouponJsonObject;
+					JSONObject currentTileJsonObject;
+					for (int index1 = 0; index1 < couponJsonArray.length(); index1++) {
+						try {
+							currentCouponJsonObject = couponJsonArray
+									.getJSONObject(index1);
+							String sTile = currentCouponJsonObject
+									.getString("Title");
+							String sDetails = currentCouponJsonObject
+									.getString("Details");
+							String sMain = currentCouponJsonObject
+									.getString("Main Discount");
+							if (haveKeyWord(keyWord, sTile, sDetails, sMain)) {
+								for (int indexTile = 0; indexTile < tilesjsonArray
+										.length(); indexTile++) {
+									currentTileJsonObject = tilesjsonArray
+											.getJSONObject(indexTile);
+									if (currentTileJsonObject.getString("Link")
+											.split("-")[1]
+											.equals(currentCouponJsonObject
+													.get("Image"))) {
+										searchJsonArray
+												.put(currentTileJsonObject);
+									}
+								}
+							}
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+					}
+					int index2;
+					InputStream inputStream;
+					Bitmap bitmap;
+					for (index2 = 0; index2 < searchJsonArray.length(); index2++) {
+						try {
+							currentTileJsonObject = searchJsonArray
+									.getJSONObject(index2);
+							String sOrder = currentTileJsonObject
+									.getString("Order");
+							inputStream = openFileInput("tile" + sOrder
+									+ ".png");
+							bitmap = BitmapFactory.decodeStream(inputStream);
+							ImageView imageView = (ImageView) findViewById(idA[index2]);
+							imageView.setVisibility(View.VISIBLE);
+							imageView.setImageBitmap(bitmap);
+						} catch (JSONException e) {
+							e.printStackTrace();
+						} catch (FileNotFoundException e) {
+							e.printStackTrace();
+						}
+					}
+					if (index2 < 18 && index2 % 2 == 1) {
+						ImageView imageView = (ImageView) findViewById(idA[index2]);
+						imageView.setVisibility(View.INVISIBLE);
+						index2 += 1;
+					}
+					while (index2 < 18) {
+						ImageView imageView = (ImageView) findViewById(idA[index2]);
+						imageView.setVisibility(View.GONE);
+						index2 += 1;
+					}
+				}
+			}
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+
+			}
+		});
+
+	}
+
+	private boolean haveKeyWord(CharSequence keyWord, String sTile,
+			String sDetails, String sMain) {
+		if ((sTile.toLowerCase()).contains(keyWord)
+				|| (sDetails.toLowerCase()).contains(keyWord)
+				|| (sMain.toLowerCase()).contains(keyWord)) {
+			return true;
+		}
+		return false;
 	}
 
 }
