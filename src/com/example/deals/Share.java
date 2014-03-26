@@ -16,9 +16,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.deals.sns.FacebookShare;
+import com.example.deals.sns.ISnsShare;
+import com.example.deals.sns.ShareResultListner;
 import com.example.deals.sns.TwitterShare;
 
-public class Share extends Activity {
+public class Share extends Activity implements ShareResultListner{
 	int index;
 	final static int cameraData = 1;
 	JSONObject jsonObject = null;
@@ -69,9 +71,11 @@ public class Share extends Activity {
 
 		twitterShare = TwitterShare.getInstance();
 		twitterShare.setActivity(this);
+		twitterShare.setShareResultListner(this);
 
 		facebookShare = FacebookShare.getInstance();
 		facebookShare.setActivity(this);
+		facebookShare.setShareResultListner(this);
 		facebookShare.onCreate(savedInstanceState);
 	}
 
@@ -96,7 +100,7 @@ public class Share extends Activity {
 		boolean isTwitterChecked = cbTwitter.isChecked();
 		if (!(isFbChecked || isTwitterChecked))
 			Toast.makeText(getApplicationContext(),
-					"Test - Please select SNS you want to post",
+					"Please select at least one social media you want to post",
 					Toast.LENGTH_SHORT).show();
 		else {
 			if (bitmap == null) {
@@ -115,9 +119,7 @@ public class Share extends Activity {
 						+ " " + sHashtag + " " + HASHTAG_DEALSHYPE);
 			}
 
-			// TODO define action after posting image & text
-			Toast.makeText(getApplicationContext(),
-					"TO DO : RedeemOffer action", Toast.LENGTH_SHORT).show();
+			// TODO define action after posting image & text on onSuccessfullyUpdated & onUpdateFailed
 		}
 	}
 
@@ -155,6 +157,30 @@ public class Share extends Activity {
 
 		if (facebookShare != null) {
 			facebookShare.onActivityResult(requestCode, resultCode, data);
+		}
+	}
+	
+	@Override
+	public void onSuccessfullyUpdated(int social) {
+		switch(social){
+			case ISnsShare.FACEBOOK :
+				Toast.makeText(getApplicationContext(), "Facebook : Update successfully done", Toast.LENGTH_SHORT).show();			
+				break;
+			case ISnsShare.TWITTER :
+				Toast.makeText(getApplicationContext(), "Twitter : Update successfully done", Toast.LENGTH_SHORT).show();						
+				break;
+		}
+	}
+
+	@Override
+	public void onUpdateFailed(int social) {
+		switch(social){
+			case ISnsShare.FACEBOOK :
+				Toast.makeText(getApplicationContext(), "Facebook : Update failed", Toast.LENGTH_SHORT).show();	
+				break;
+			case ISnsShare.TWITTER :
+				Toast.makeText(getApplicationContext(), "Twitter : Update failed", Toast.LENGTH_SHORT).show();			
+				break;
 		}
 	}
 

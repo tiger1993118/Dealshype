@@ -18,6 +18,7 @@ public class FacebookShare implements ISnsShare{
 	private Activity activity;
 	private UiLifecycleHelper uiHelper;	
 	private static FacebookShare facebookShare;
+	private ShareResultListner listner;
 	
 	private FacebookShare() { }
 	
@@ -95,10 +96,20 @@ public class FacebookShare implements ISnsShare{
 	    reqPost.setCallback(new Callback() {
 			@Override
 			public void onCompleted(Response response) {
-				Toast.makeText(activity, "TEST : update status on facebook has been finished", Toast.LENGTH_SHORT).show();
+				if(response.getError() == null){
+					if(listner != null)
+						listner.onSuccessfullyUpdated(ISnsShare.FACEBOOK);
+				}else{
+					if(listner != null)
+						listner.onUpdateFailed(ISnsShare.FACEBOOK);
+				}	
 			}
 		});
 		reqPost.executeAsync();
 	}
-	
+
+	@Override
+	public void setShareResultListner(ShareResultListner listner) {
+		this.listner = listner;
+	}
 }

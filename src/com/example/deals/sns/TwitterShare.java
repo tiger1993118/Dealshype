@@ -2,7 +2,10 @@ package com.example.deals.sns;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 
+import twitter4j.Query;
+import twitter4j.QueryResult;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
@@ -21,9 +24,11 @@ import android.view.View;
 import android.view.Window;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.deals.R;
+import com.example.deals.twitterfeed.TwitterFeedListAdapter;
 
 /**
  * Activity should be set w/ setActivity(Activity activity) method before using TwitterShare.
@@ -40,6 +45,7 @@ public class TwitterShare implements ISnsShare{
 	private AccessToken accessToken;
 	
 	private static TwitterShare twitterShare;
+	private ShareResultListner listner;
 	
 	private TwitterShare() { }
 
@@ -133,41 +139,104 @@ public class TwitterShare implements ISnsShare{
 	public void requestLogIn(){
 		initialize();
 	}
+	
+	public void updateStatus(String text){
+		updateStatus(null, text);
+	}
 
 	@Override
-	public void updateStatus(Bitmap bitmap, final String text){
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-		byte[] imgBytes = baos.toByteArray();
-		Base64.encodeToString(imgBytes, Base64.DEFAULT);
-		final ByteArrayInputStream bais = new ByteArrayInputStream(imgBytes);
+	public void updateStatus(final Bitmap bitmap, final String text){
+		final StatusUpdate toUpdate = new StatusUpdate(text);
+		
+		if(bitmap != null){
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+			byte[] imgBytes = baos.toByteArray();
+			Base64.encodeToString(imgBytes, Base64.DEFAULT);
+			final ByteArrayInputStream bais = new ByteArrayInputStream(imgBytes);
+			toUpdate.setMedia("img", bais);
+		}
 		
 		new Thread(new Runnable() {
 			
 			@Override
 			public void run() {
 				try {
-					StatusUpdate toUpdate = new StatusUpdate(text);
-					toUpdate.setMedia("img", bais);
-					
 					Status status = twitter.updateStatus(toUpdate);
 					
 					if(status != null){	//when successfully posted on twitter
+						if(listner != null){
+							runCallback(new TwitCallback() {
+								
+								@Override
+								public void run() {
+										listner.onSuccessfullyUpdated(ISnsShare.TWITTER);
+								}
+							});
+						}
+					}
+				} catch (TwitterException e) {
+					if(listner != null){
 						runCallback(new TwitCallback() {
 							
 							@Override
 							public void run() {
-								Toast.makeText(activity, "TEST : update status on twitter has been finished", Toast.LENGTH_SHORT).show();
+								listner.onUpdateFailed(ISnsShare.TWITTER);
 							}
 						});
 					}
-				} catch (TwitterException e) {
 					e.printStackTrace();
 				}	
 			}
 		}).start();
 	}
 	
+	public void search(String query){
+		final Query myQuery = new Query(query);
+		myQuery.count(30);	//sets the number of tweets to return per page, up to a max of 100
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					final QueryResult result = twitter.search(myQuery);
+					
+					if(result != null){	//when successfully posted on twitter
+						runCallback(new TwitCallback() {
+							
+							@Override
+							public void run() {
+								
+								ArrayList<Status> tweetResult = new ArrayList<Status>();
+								for(Status status : result.getTweets()){
+									tweetResult.add(status);
+								}
+								
+								ListView lvTweet = (ListView) activity.findViewById(R.id.lvTweets);
+								TwitterFeedListAdapter tAdapter = new TwitterFeedListAdapter(tweetResult, activity);
+								lvTweet.setAdapter(tAdapter);
+								tAdapter.notifyDataSetChanged();
+							}
+						});
+					}
+				} catch (TwitterException e) {
+					runCallback(new TwitCallback() {
+						@Override
+						public void run() {
+							Toast.makeText(activity, "Error while searching", Toast.LENGTH_SHORT).show();
+						}
+					});
+				}	
+			}
+		}).start();
+	}
+	
+	
+	@Override
+	public void setShareResultListner(ShareResultListner listner) {
+		this.listner = listner;
+	}
+
 	public static class TwitterSignInActivity extends Activity{
 		
 		@Override
