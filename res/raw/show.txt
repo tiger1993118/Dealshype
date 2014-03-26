@@ -1,0 +1,101 @@
+[
+	{
+		"date" : "2014-03-01",
+		"events" : [
+			{
+				"time_s" : "14:00",
+				"time_e" : "17:00",
+				"title" : "Registration/Information Desk Open",
+				"detail" : "No Description provided",
+				"address" : "test ave."
+			},
+			{
+				"time_s" : "15:00",
+				"time_e" : "17:00",
+				"title" : "Orientation Session for new Members",
+				"detail" : "Is this your first time attending the AAMC National Professional Development Conference?...",
+				"address" : "test 22 ave."
+			},
+			{
+				"time_s" : "16:30",
+				"time_e" : "19:00",
+				"title" : "Opening Plenary Session",
+				"detail" : "Dr. Zu Da is also on a mission to radically improve health care delivery...",
+				"address" : "test 33 ave."
+			},
+			{
+				"time_s" : "18:00",
+				"time_e" : "21:00",
+				"title" : "Welcome Reception, Buffet Dinner",
+				"detail" : "Shuttle bus service is provided between...",
+				"address" : "test 3333 ave."
+			}
+		]
+	},
+	{
+		"date" : "2014-03-02",
+		"events" : [
+			{
+				"time_s" : "15:00",
+				"time_e" : "18:00",
+				"title" : "2 Registration/Information Desk Open",
+				"detail" : "2 No Description provided",
+				"address" : "2 test ave."
+			},
+			{
+				"time_s" : "16:00",
+				"time_e" : "18:00",
+				"title" : "2 Orientation Session for new Members",
+				"detail" : "2 Is this your first time attending the AAMC National Professional Development Conference?...",
+				"address" : "2 test 22 ave."
+			},
+			{
+				"time_s" : "17:30",
+				"time_e" : "20:00",
+				"title" : "2 Opening Plenary Session",
+				"detail" : "2 Dr. Zu Da is also on a mission to radically improve health care delivery...",
+				"address" : "2 test 33 ave."
+			},
+			{
+				"time_s" : "19:00",
+				"time_e" : "22:00",
+				"title" : "2 Welcome Reception, Buffet Dinner",
+				"detail" : "2 Shuttle bus service is provided between...",
+				"address" : "2 test 3333 ave."
+			}
+		]
+	},
+	{
+		"date" : "2014-03-03",
+		"events" : [
+			{
+				"time_s" : "16:00",
+				"time_e" : "18:00",
+				"title" : "3 Registration/Information Desk Open",
+				"detail" : "3 No Description provided",
+				"address" : "3 test ave."
+			},
+			{
+				"time_s" : "17:00",
+				"time_e" : "19:00",
+				"title" : "3 Orientation Session for new Members",
+				"detail" : "3 Is this your first time attending the AAMC National Professional Development Conference?...",
+				"address" : "3 test 22 ave."
+			},
+			{
+				"time_s" : "18:30",
+				"time_e" : "21:00",
+				"title" : "3 Opening Plenary Session",
+				"detail" : "3 Dr. Zu Da is also on a mission to radically improve health care delivery...",
+				"address" : "3 test 33 ave."
+			},
+			{
+				"time_s" : "20:00",
+				"time_e" : "23:00",
+				"title" : "3 Welcome Reception, Buffet Dinner",
+				"detail" : "3 Shuttle bus service is provided between...",
+				"address" : "3 test 3333 ave."
+			}
+		]
+	}
+]

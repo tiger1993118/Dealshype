@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <Button 
+        android:visibility="gone"
+        android:id="@+id/btnLoginTweet"
+        android:layout_centerInParent="true"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:text="Log In"
+        />
+    
+    <LinearLayout
+        android:id="@+id/layoutTwitter"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+             >
+            <EditText 
+                android:id="@+id/etTweet"
+	            android:layout_width="0dp"
+	            android:layout_weight="6"
+	            android:layout_height="50dp"
+	            android:gravity="top"
+	            />
+            <Button
+				android:id="@+id/btnTweet"
+	            android:text="tweet"
+	            android:textSize="12sp"
+	            android:layout_width="0dp"
+	            android:layout_weight="2"
+                android:layout_height="50dp"
+                />
+            
+            <Button
+				android:id="@+id/btnSearch"
+				android:text="search"
+	            android:textSize="12sp"
+	            android:layout_width="0dp"
+	            android:layout_weight="2"
+                android:layout_height="50dp"
+                />
+        </LinearLayout>
+        
+        
+        <ListView 
+	        android:id="@+id/lvTweets"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        />
+    </LinearLayout>
+</RelativeLayout>
