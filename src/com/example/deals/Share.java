@@ -1,11 +1,16 @@
 package com.example.deals;
 
+import java.net.URL;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -30,11 +35,12 @@ public class Share extends Activity implements ShareResultListner{
 	ImageView ivPhoto;
 	EditText etMsg;
 
+	ProgressDialog pDialog;
 	TwitterShare twitterShare;
 	FacebookShare facebookShare;
 	CheckBox cbFb, cbTwitter;
 	final static String HASHTAG_DEALSHYPE = "#DealsHype";
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -98,15 +104,32 @@ public class Share extends Activity implements ShareResultListner{
 	public void redeemOffer(View view) {
 		boolean isFbChecked = cbFb.isChecked();
 		boolean isTwitterChecked = cbTwitter.isChecked();
+		
+		if(pDialog == null){
+			pDialog = new ProgressDialog(Share.this);
+			pDialog.setMessage("Please wait...");
+			pDialog.setCancelable(false);
+			pDialog.setIndeterminate(true);
+		}
+		
 		if (!(isFbChecked || isTwitterChecked))
 			Toast.makeText(getApplicationContext(),
 					"Please select at least one social media you want to post",
 					Toast.LENGTH_SHORT).show();
 		else {
+			pDialog.show();
+			
 			if (bitmap == null) {
-				Toast.makeText(getApplicationContext(),
-						"TEST : Please take a photo", Toast.LENGTH_SHORT)
-						.show();
+				//create bitmap from PlaceHoldeImageLink when there's no photo selected by user
+				try {
+					String url = jsonObject.getString("PlaceholderImageLink");
+					new RetrievePlaceHolderAsync().execute(url);
+				} catch (JSONException e) {
+					e.printStackTrace();
+					Toast.makeText(getApplicationContext(),
+							"Error : Please try again",
+							Toast.LENGTH_SHORT).show();
+				}
 				return;
 			}
 
@@ -118,7 +141,6 @@ public class Share extends Activity implements ShareResultListner{
 				twitterShare.updateStatus(bitmap, etMsg.getText().toString()
 						+ " " + sHashtag + " " + HASHTAG_DEALSHYPE);
 			}
-
 			// TODO define action after posting image & text on onSuccessfullyUpdated & onUpdateFailed
 		}
 	}
@@ -170,6 +192,8 @@ public class Share extends Activity implements ShareResultListner{
 				Toast.makeText(getApplicationContext(), "Twitter : Update successfully done", Toast.LENGTH_SHORT).show();						
 				break;
 		}
+		if(pDialog != null)
+			pDialog.dismiss();
 	}
 
 	@Override
@@ -182,9 +206,38 @@ public class Share extends Activity implements ShareResultListner{
 				Toast.makeText(getApplicationContext(), "Twitter : Update failed", Toast.LENGTH_SHORT).show();			
 				break;
 		}
+		if(pDialog != null)
+			pDialog.dismiss();
 	}
 
 	public void back(View view) {
 		finish();
+	}
+	
+	private class RetrievePlaceHolderAsync extends AsyncTask<String, Void, Void>{
+
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+		}
+
+		@Override
+		protected Void doInBackground(String... params) {
+			try {
+				URL url = new URL(params[0]);
+				bitmap = BitmapFactory.decodeStream(url.openStream());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			super.onPostExecute(result);
+			
+			if(bitmap!=null)
+				redeemOffer(null);
+		}
 	}
 }
