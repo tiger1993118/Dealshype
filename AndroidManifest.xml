@@ -38,7 +38,7 @@
         </activity>
         <activity
             android:name="Tiles"
-            android:hardwareAccelerated="false"
+            android:hardwareAccelerated="true"
             android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="com.example.deals.Tiles" />
