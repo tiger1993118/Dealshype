@@ -92,8 +92,10 @@ public class Share extends Activity implements ShareResultListner{
 	}
 
 	public void shareOnFacebook(View view) {
-		if (cbFb.isChecked() && !facebookShare.isLoggedOn())
-			facebookShare.requestLogIn();
+		if (cbFb.isChecked() && !facebookShare.isLoggedOn()){
+			boolean isSessionCached = Login.getSettings(this).getBoolean(Login.SETTINGS_FB_LOGIN, false);
+			facebookShare.requestLogIn(isSessionCached);
+		}
 	}
 
 	public void shareOnTwitter(View view) {

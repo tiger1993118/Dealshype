@@ -65,12 +65,22 @@ public class FacebookShare implements ISnsShare{
 
 	@Override
 	public void requestLogIn() {
-		Session session = Session.getActiveSession();
-		if(session.getState() == SessionState.CREATED_TOKEN_LOADED){
-			session.closeAndClearTokenInformation();
+		requestLogIn(false);
+	}
+	
+	public void requestLogIn(boolean isSessionCached){
+		Session session;
+		if(isSessionCached){
+			session = Session.openActiveSessionFromCache(activity);
+		}else{
+			session = Session.getActiveSession();
+			
+			if(session.getState() == SessionState.CREATED_TOKEN_LOADED){
+				session.closeAndClearTokenInformation();
+			}
+			
+			Session.openActiveSession(activity, true, sessionCallback);	//ask for log-in
 		}
-
-		Session.openActiveSession(activity, true, sessionCallback);	//ask for log-in
 	}
 
 	@Override
@@ -111,5 +121,16 @@ public class FacebookShare implements ISnsShare{
 	@Override
 	public void setShareResultListner(ShareResultListner listner) {
 		this.listner = listner;
+	}
+	
+	public void closeCurrentSession(){
+		Session.setActiveSession(null);
+	}
+	
+	/**
+	 * This method should be called when the user no longer wants Auto-LogIn
+	 */
+	public void deleteCachedSession(){
+		Session.getActiveSession().closeAndClearTokenInformation();
 	}
 }

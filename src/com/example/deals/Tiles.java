@@ -12,6 +12,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimerTask;
 
 import org.json.JSONArray;
@@ -35,6 +36,8 @@ import android.view.Window;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+
+import com.example.deals.sns.FacebookShare;
 
 public class Tiles extends Activity implements OnClickListener {
 
@@ -460,7 +463,7 @@ public class Tiles extends Activity implements OnClickListener {
 					setLayoutFromLocal();
 					keyWord = "";
 				} else {
-					keyWord = cs.toString().toLowerCase();
+					keyWord = cs.toString().toLowerCase(Locale.getDefault());
 					searchJsonArray = new JSONArray();
 					JSONObject currentCouponJsonObject;
 					JSONObject currentTileJsonObject;
@@ -542,12 +545,20 @@ public class Tiles extends Activity implements OnClickListener {
 
 	private boolean haveKeyWord(CharSequence keyWord, String sTile,
 			String sDetails, String sMain) {
-		if ((sTile.toLowerCase()).contains(keyWord)
-				|| (sDetails.toLowerCase()).contains(keyWord)
-				|| (sMain.toLowerCase()).contains(keyWord)) {
+		if ((sTile.toLowerCase(Locale.getDefault())).contains(keyWord)
+				|| (sDetails.toLowerCase(Locale.getDefault())).contains(keyWord)
+				|| (sMain.toLowerCase(Locale.getDefault())).contains(keyWord)) {
 			return true;
 		}
 		return false;
 	}
 
+	@Override
+	public void onBackPressed() {
+		FacebookShare fbShare = FacebookShare.getInstance();
+		if(fbShare.isLoggedOn())	//close current FB session before closing the application
+			fbShare.closeCurrentSession();
+		
+		super.onBackPressed();
+	}
 }

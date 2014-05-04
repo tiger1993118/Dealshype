@@ -17,7 +17,7 @@
             android:layout_height="60dp"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="430dp"
+            android:layout_marginTop="400dp"
             android:background="@drawable/box_signin_email"
             android:gravity="center"
             android:hint="Sign In with Email"
@@ -38,6 +38,15 @@
             android:textColor="#FFFF"
             android:onClick="signInFb"
             />
+        
+        <CheckBox 
+            android:id="@+id/cbFbAutoLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:text="Auto Login to Facebook"
+            android:layout_below="@+id/btnFbSignIn"
+            android:layout_centerHorizontal="true"
+                        />
     </RelativeLayout>
 
 </ScrollView>
