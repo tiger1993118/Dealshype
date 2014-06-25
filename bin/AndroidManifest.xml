@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.deals"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="19" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name="com.example.deals.Splash"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="Login"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" >
+            <intent-filter>
+                <action android:name="com.example.deals.Login" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="Tiles"
+            android:hardwareAccelerated="true"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="com.example.deals.Tiles" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="Favorite"
+            android:hardwareAccelerated="false"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="com.example.deals.Favorite" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="Search"
+            android:hardwareAccelerated="false"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="com.example.deals.Search" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="Coupon"
+            android:hardwareAccelerated="false"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="com.example.deals.Coupon" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="Browser"
+            android:hardwareAccelerated="false"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="com.example.deals.Browser" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="Share"
+            android:hardwareAccelerated="false"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="com.example.deals.Share" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".schedule.SchedulerActivity"
+            android:hardwareAccelerated="false"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="com.example.deals.schedule.SchedulerActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".twitterfeed.TwitterFeedActivity"
+            android:hardwareAccelerated="false"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="com.example.deals.twitterfeed.TwitterFeedActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name="com.example.deals.sns.TwitterShare$TwitterSignInActivity" >
+        </activity>
+
+        <!-- for facebook -->
+        <activity
+            android:name="com.facebook.LoginActivity"
+            android:label="@string/app_name" />
+
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/app_id" />
+        <!-- for facebook -->
+    </application>
+
+</manifest>
